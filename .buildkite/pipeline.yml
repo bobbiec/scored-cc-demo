@@ -1,0 +1,9 @@
+steps:
+  - label: ":hammer: Build"
+    command: "docker build ."
+    key: build
+
+  - label: ":test_tube: Test"
+    command: "echo 'mock test'"
+    key: test
+    depends_on: build
