@@ -2,9 +2,9 @@ steps:
   - label: ":hammer: Build Python"
     commands:
       - "docker build python -t basic-flask"
-      - "syft scan basic-flask -o spdx-json=out.json"
-    # artifact_paths:
-    #   - "basic-flask-sbom.json"
+      - "syft scan basic-flask -o spdx-json=basic-flask-sbom.json"
+    artifact_paths:
+      - "basic-flask-sbom.json"
     key: build
 
   - label: ":test_tube: Test"
