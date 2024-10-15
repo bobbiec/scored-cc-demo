@@ -2,22 +2,24 @@ env:
   IMAGE_NAME: basic-flask
 
 steps:
-  - label: ":hammer: Build Docker image"
+  - key: build
+    label: ":docker: Build container image"
     commands:
       - "docker build python -t $$IMAGE_NAME"
 
-  - label: "Scan Docker image with Syft"
+  - label: ":test_tube: Test"
+    command: "echo 'mock test the container image'"
+    key: test
+    depends_on: build
+
+  - label: ":mag: Scan container image with Syft"
     commands:
       - "syft scan $$IMAGE_NAME -o spdx-json=$$IMAGE_NAME-sbom.json"
     artifact_paths:
       - "basic-flask-sbom.json"
-    key: build
+    depends_on: build
 
-  - label: "Build AWS Nitro Enclaves Image File (EIF)"
+  - label: ":hammer: Build AWS Nitro Enclaves Image File (EIF)"
     commands:
       - "anjuna-nitro-cli build-enclave --docker-uri $$IMAGE_NAME --output-file $$IMAGE_NAME.eif"
-
-  - label: ":test_tube: Test"
-    command: "echo 'mock test'"
-    key: test
     depends_on: build
