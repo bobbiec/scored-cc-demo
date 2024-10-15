@@ -2,6 +2,7 @@ steps:
   - label: ":hammer: Build Python"
     commands:
       - "docker build python -t basic-flask"
+      - "/home/ec2-user/install-docker-sbom.sh"
       - "docker version"
       - "docker info"
       - "pwd"
