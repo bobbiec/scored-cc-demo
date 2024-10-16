@@ -1,6 +1,7 @@
 env:
   IMAGE_NAME: basic-flask
-  BUILDKITE_ARTIFACT_UPLOAD_DESTINATION: s3://anjuna-demo-supply-chain-security/builds/$BUILDKITE_BUILD_ID/jobs/$BUILDKITE_JOB_ID
+  S3_BUCKET: anjuna-demo-supply-chain-security
+  BUILDKITE_ARTIFACT_UPLOAD_DESTINATION: s3://$S3_BUCKET/builds/$BUILDKITE_BUILD_ID/jobs/$BUILDKITE_JOB_ID
   BUILDKITE_S3_ACL: bucket-owner-full-control
 
 steps:
@@ -27,16 +28,19 @@ steps:
     commands:
       - "anjuna-nitro-cli build-enclave --docker-uri $$IMAGE_NAME --output-file $$IMAGE_NAME.eif"
       - "anjuna-nitro-cli describe-eif --eif-path $$IMAGE_NAME.eif | jq .Measurements > measurements.json"
+      - buildkite-agent artifact upload $$IMAGE_NAME.eif s3://$$S3_BUCKET/eifs
     artifact_paths:
       - "measurements.json"
     depends_on: build
 
   - key: combine
-    label: "Combine supply chain metadata"
+    label: "Combine and publish supply chain metadata"
     commands:
       - buildkite-agent artifact download *.json .
+      - export COMBINED_FILE=$(<measurements.json jq -r .Measurements.PCR0).json
       - |
-        echo '{"eif-measurements": '$(cat measurements.json)', "sbom-spdx": '$(cat sbom-spdx.json)'}' > combined.json
+        echo '{"eif-measurements": '$(cat measurements.json)', "sbom-spdx": '$(cat sbom-spdx.json)'}' > $$COMBINED_FILE
+      - buildkite-agent artifact upload combined.json s3://$$S3_BUCKET/measurements
     artifact_paths:
       - "combined.json"
     depends_on:
