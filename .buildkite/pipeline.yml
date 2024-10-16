@@ -33,7 +33,8 @@ steps:
     label: "TODO"
     commands:
       - buildkite-agent artifact download *.json .
-      - echo '{"eif-measurements": '$(cat measurements.json)', "sbom-spdx": '$(cat sbom-spdx.json)'}' > combined.json
+      - |
+        echo '{"eif-measurements": '$(cat measurements.json)', "sbom-spdx": '$(cat sbom-spdx.json)'}' > combined.json
     depends_on:
       - scan
       - eif
