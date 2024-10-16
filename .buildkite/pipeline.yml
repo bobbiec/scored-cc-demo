@@ -37,7 +37,7 @@ steps:
     label: "Combine and publish supply chain metadata"
     commands:
       - buildkite-agent artifact download *.json .
-      - export COMBINED_FILE=$(<measurements.json jq -r .Measurements.PCR0).json
+      - export COMBINED_FILE=$(<measurements.json jq -r .PCR0).json
       - |
         echo '{"eif-measurements": '$(cat measurements.json)', "sbom-spdx": '$(cat sbom-spdx.json)'}' > $$COMBINED_FILE
       - buildkite-agent artifact upload $$COMBINED_FILE s3://$$S3_BUCKET/measurements
