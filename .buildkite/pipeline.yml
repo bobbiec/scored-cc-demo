@@ -32,8 +32,7 @@ steps:
   - key: combine
     label: "TODO"
     commands:
-      - buildkite-agent artifact download sbom-spdx.json
-      - buildkite-agent artifact download measurements.json
+      - buildkite-agent artifact download *.json .
       - cat sbom-spdx.json measurements.json | wc
     depends_on:
       - scan
