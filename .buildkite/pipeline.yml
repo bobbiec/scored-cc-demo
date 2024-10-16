@@ -24,7 +24,7 @@ steps:
     depends_on: build
 
   - key: eif
-    label: ":hammer: Build AWS Nitro Enclaves Image File (EIF)"
+    label: ":hammer: Build AWS Nitro Enclaves Image File (EIF) and publish"
     commands:
       - "anjuna-nitro-cli build-enclave --docker-uri $$IMAGE_NAME --output-file $$IMAGE_NAME.eif"
       - "anjuna-nitro-cli describe-eif --eif-path $$IMAGE_NAME.eif | jq .Measurements > measurements.json"
@@ -34,7 +34,7 @@ steps:
     depends_on: build
 
   - key: combine
-    label: "Combine and publish supply chain metadata"
+    label: "Combine supply chain metadata and publish"
     commands:
       - buildkite-agent artifact download *.json .
       - export COMBINED_FILE=$(<measurements.json jq -r .PCR0).json
