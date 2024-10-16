@@ -30,7 +30,7 @@ steps:
     depends_on: build
 
   - key: combine
-    label: "TODO"
+    label: "Combine supply chain metadata"
     commands:
       - buildkite-agent artifact download *.json .
       - |
