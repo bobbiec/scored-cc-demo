@@ -40,9 +40,7 @@ steps:
       - export COMBINED_FILE=$(<measurements.json jq -r .Measurements.PCR0).json
       - |
         echo '{"eif-measurements": '$(cat measurements.json)', "sbom-spdx": '$(cat sbom-spdx.json)'}' > $$COMBINED_FILE
-      - buildkite-agent artifact upload combined.json s3://$$S3_BUCKET/measurements
-    artifact_paths:
-      - "combined.json"
+      - buildkite-agent artifact upload $$COMBINED_FILE s3://$$S3_BUCKET/measurements
     depends_on:
       - scan
       - eif
