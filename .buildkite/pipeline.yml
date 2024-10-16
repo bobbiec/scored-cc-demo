@@ -1,6 +1,7 @@
 env:
   IMAGE_NAME: basic-flask
   BUILDKITE_ARTIFACT_UPLOAD_DESTINATION: s3://anjuna-demo-supply-chain-security/builds/$BUILDKITE_BUILD_ID/jobs/$BUILDKITE_JOB_ID
+  BUILDKITE_S3_ACL: bucket-owner-full-control
 
 steps:
   - key: build
