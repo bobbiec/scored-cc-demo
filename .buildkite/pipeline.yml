@@ -1,5 +1,5 @@
 env:
-  IMAGE_NAME: basic-flask
+  IMAGE_NAME: flask-attestation
   S3_BUCKET: anjuna-demo-supply-chain-security
   BUILDKITE_ARTIFACT_UPLOAD_DESTINATION: s3://$S3_BUCKET/builds/$BUILDKITE_BUILD_ID/jobs/$BUILDKITE_JOB_ID
   BUILDKITE_S3_ACL: bucket-owner-full-control

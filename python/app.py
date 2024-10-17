@@ -13,10 +13,12 @@ def hello_world():
 def attestation():
     data = request.get_json(force=True)
     nonce = base64.urlsafe_b64encode(data['nonce'].encode())
+    userData = base64.urlsafe_b64encode(b"This data is authenticated!")
     response = requests.get(
         'http://localhost:50123/api/v1/attestation/report',
         params={
             'nonce': nonce,
+            'userData': userData,
         }
     )
     return response.content
