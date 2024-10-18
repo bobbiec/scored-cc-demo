@@ -1,0 +1,46 @@
+env:
+  IMAGE_NAME: flask-attestation
+  S3_BUCKET: anjuna-demo-supply-chain-security
+  BUILDKITE_ARTIFACT_UPLOAD_DESTINATION: s3://$S3_BUCKET/builds/$BUILDKITE_BUILD_ID/jobs/$BUILDKITE_JOB_ID
+  BUILDKITE_S3_ACL: bucket-owner-full-control
+
+steps:
+  - key: build
+    label: ":docker: Build container image"
+    commands:
+      - "docker build python -t $$IMAGE_NAME"
+
+  - key: test
+    label: ":test_tube: Test"
+    command: "echo 'mock test the container image'"
+    depends_on: build
+
+  - key: scan
+    label: ":mag: Scan container image with Syft"
+    commands:
+      - "syft scan $$IMAGE_NAME -o spdx-json=sbom-spdx.json"
+    artifact_paths:
+      - "sbom-spdx.json"
+    depends_on: build
+
+  - key: eif
+    label: ":hammer: Build AWS Nitro Enclaves Image File (EIF) and publish"
+    commands:
+      - "anjuna-nitro-cli build-enclave --docker-uri $$IMAGE_NAME --output-file $$IMAGE_NAME.eif"
+      - "anjuna-nitro-cli describe-eif --eif-path $$IMAGE_NAME.eif | jq .Measurements > measurements.json"
+      - buildkite-agent artifact upload $$IMAGE_NAME.eif s3://$$S3_BUCKET/eifs
+    artifact_paths:
+      - "measurements.json"
+    depends_on: build
+
+  - key: combine
+    label: "Combine supply chain metadata and publish"
+    commands:
+      - buildkite-agent artifact download *.json .
+      - export COMBINED_FILE=$(<measurements.json jq -r .PCR0).json
+      - |
+        echo '{"eif-measurements": '$(cat measurements.json)', "sbom-spdx": '$(cat sbom-spdx.json)'}' > $$COMBINED_FILE
+      - buildkite-agent artifact upload $$COMBINED_FILE s3://$$S3_BUCKET/measurements
+    depends_on:
+      - scan
+      - eif

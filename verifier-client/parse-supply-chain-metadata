@@ -1,0 +1,39 @@
+#!/usr/bin/python3
+
+import time
+
+print("\n(mocked output)\n")
+time.sleep(0.1)
+
+print("1. Checking Confidential Computing remote attestation...")
+time.sleep(0.1)
+
+print("  ✅ Verified successfully (AWS Nitro Enclaves, Anjuna Runtime v1.48)")
+print()
+
+print("2. Checking SLSA...")
+time.sleep(0.2)
+
+print("  ✅ Verified successfully (SLSA Level 1, Buildkite build #xxx,)")
+print()
+
+print("3. Checking SBOM (SPDX format)...")
+time.sleep(0.5)
+print("  ⚠️  Medium-risk vulnerability in OS dependency libfoo v1.2.3")
+print("  ⚠️  Medium-risk vulnerability in OS dependency libbar v2.4.0")
+time.sleep(0.2)
+print("  ⛔️ High-risk vulnerability in Python dependency Log4Py v0.42.91")
+
+print()
+print("=" * 66)
+print("| Summary: ⛔️ FAILED (see #3)")
+print("=" * 66)
+print("| 1 | ✅ | Confidential Computing remote attestation")
+print("| 2 | ✅ | SLSA build provenance")
+print("| 3 | ⛔️ | SBOM vulnerability check (1 high, 2 medium)")
+print("-" * 66)
+print("| `flask-attestation.eif` does not conform to policy.")
+print("| This failure has been logged.")
+print("=" * 66)
+print()
+print("(mocked output)\n")
